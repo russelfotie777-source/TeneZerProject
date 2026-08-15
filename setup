@@ -1,0 +1,40 @@
+mfappartement/               <-- Racine de votre projet
+│
+├── mfbase/                  <-- Gestion de la base de données (votre idée, très bonne !)
+│   └── database.php         <-- Fichier unique de connexion (PDO ou MySQLi)
+│
+├── includes/                <-- Composants modulaires (côté client)
+│   ├── header.php           <-- En-tête (balises <head>, liens CSS, widget Google Translate)
+│   ├── navbar.php           <-- Menu de navigation principal
+│   ├── footer.php           <-- Pied de page
+│   ├── banner.php           <-- Bannière d'accueil ou d'en-tête de page
+│   └── reservation_bar.php  <-- La fameuse barre de recherche de disponibilité rapide (style B&B Hotel)
+│
+├── assets/                  <-- Fichiers statiques et médias
+│   ├── css/
+│   │   └── style.css        <-- Votre feuille de style principale
+│   ├── js/
+│   │   ├── script.js        <-- Animations, validation de formulaires
+│   │   └── pwa-app.js       <-- Script pour installer la PWA et gérer le Service Worker
+│   ├── images/              <-- Images du thème (logo, icônes, bannières fixes)
+│   ├── icons/               <-- Icônes obligatoires pour la PWA (192x192, 512x512, etc.)
+│   └── uploads/             <-- IMPORTANT : C'est ici qu'iront les photos des appartements ajoutées depuis l'admin
+│
+├── admin/                   <-- Espace d'administration (sécurisé)
+│   ├── includes_admin/      <-- Modulaire pour l'admin (header_admin, sidebar, etc.)
+│   ├── index.php            <-- Tableau de bord (Dashboard)
+│   ├── login.php            <-- Page de connexion sécurisée
+│   ├── manage_apartments.php<-- Ajouter/Modifier/Supprimer un appartement
+│   ├── manage_photos.php    <-- Gérer la galerie et choisir l'image "is_main"
+│   ├── manage_reservations.php <-- Voir et valider les réservations (passer de 'pending' à 'confirmed')
+│   └── block_dates.php      <-- Gérer les indisponibilités manuelles (travaux, etc.)
+│
+├── index.php                <-- Page d'Accueil [cite: 32]
+├── appartements.php         <-- Catalogue défilant de tous les logements [cite: 33, 45]
+├── detail.php               <-- Page d'un appartement spécifique (avec description, équipements, galerie) [cite: 16, 17]
+├── reservation.php          <-- Formulaire de réservation simple et choix des dates [cite: 19, 20]
+├── galerie.php              <-- Page Galerie globale (optionnel selon le design) [cite: 35]
+├── contact.php              <-- Page Contact avec bouton WhatsApp rapide [cite: 26, 36, 48]
+│
+├── manifest.json            <-- OBLIGATOIRE POUR LA PWA : Définit le nom de l'app, les couleurs et les icônes d'installation [cite: 55, 57]
+└── sw.js                    <-- OBLIGATOIRE POUR LA PWA (Service Worker) : Gère le cache pour la navigation rapide et le mode hors-ligne [cite: 59, 64]
