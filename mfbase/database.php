@@ -2,7 +2,7 @@
 
 date_default_timezone_set('Africa/Douala');
 
-define('INSTALLATION_DATE', '2026-04-14');
+define('INSTALLATION_DATE', '2026-08-14');
 define('LICENSE_CYCLE_MONTHS', 15);
 
 
