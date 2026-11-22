@@ -35,9 +35,9 @@ if (isset($property) && isset($pdo)) {
                     <?php endif; ?>
                 </div>
                 <div class="p-5">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-tenezer-gold"><?php echo htmlspecialchars(tenezer_type_label($sim['type'])); ?></span>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-tenezer-gold"><?php echo htmlspecialchars($sim['category'] === 'meuble' ? tenezer_meuble_label($sim['type']) : tenezer_type_label($sim['type'])); ?></span>
                     <h4 class="font-black text-slate-900 text-sm mt-1 mb-2 truncate"><?php echo htmlspecialchars($sim['title']); ?></h4>
-                    <p class="font-black text-tenezer-dark text-sm"><?php echo number_format((float)$sim['price'], 0, ',', ' '); ?> FCFA</p>
+                    <p class="font-black text-tenezer-dark text-sm"><?php echo htmlspecialchars(tenezer_price_label($sim)); ?></p>
                 </div>
             </a>
         <?php endforeach; ?>
