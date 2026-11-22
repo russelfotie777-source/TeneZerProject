@@ -23,6 +23,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <i class="fas fa-building w-5 text-center"></i>
             <span>Logements &amp; Terrains</span>
         </a>
+        <a href="manage_meubles.php" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 <?php echo in_array($current_page, ['manage_meubles.php', 'meuble-form.php'], true) ? 'bg-[#F1A80A]/10 text-[#F1A80A] font-medium' : 'hover:bg-slate-800 hover:text-white'; ?>">
+            <i class="fas fa-couch w-5 text-center"></i>
+            <span>Logements meublés</span>
+        </a>
         <a href="manage_owners.php" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 <?php echo $current_page == 'manage_owners.php' ? 'bg-[#F1A80A]/10 text-[#F1A80A] font-medium' : 'hover:bg-slate-800 hover:text-white'; ?>">
             <i class="fas fa-user-check w-5 text-center"></i>
             <span>Propriétaires</span>
