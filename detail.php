@@ -98,13 +98,38 @@ require_once 'includes/navbar.php';
                 </div>
                 <?php endif; ?>
 
+                <?php if (trim($property['description']) !== ''): ?>
                 <div class="prose prose-slate max-w-none mb-10">
                     <h3 class="font-sans text-xl sm:text-2xl font-black text-slate-900 mb-4 uppercase tracking-tight">Description</h3>
                     <p class="text-slate-600 leading-relaxed text-sm sm:text-base font-light">
                         <?php echo nl2br(htmlspecialchars($property['description'])); ?>
                     </p>
                 </div>
+                <?php endif; ?>
 
+                <?php if ($isMeuble): ?>
+                <div class="py-8 border-t border-gray-100">
+                    <h3 class="font-sans text-xl sm:text-2xl font-black text-slate-900 mb-6 uppercase tracking-tight">Sécurité et accès</h3>
+                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <?php foreach ([
+                            ['fa-user-shield', 'Gardien sur place', $property['has_guard'] ? 'Oui' : 'Non', (bool)$property['has_guard']],
+                            ['fa-shield-halved', 'Barrière sécurisée', $property['has_secure_gate'] ? 'Oui' : 'Non', (bool)$property['has_secure_gate']],
+                            ['fa-clock', 'Disponible 24h/24', $property['open_24h'] ? 'Oui' : 'Non', (bool)$property['open_24h']],
+                            ['fa-road', 'Distance de la route', $property['distance_route'] ?: 'Non précisée', (bool)$property['distance_route']],
+                        ] as [$icon, $label, $value, $yes]): ?>
+                        <div class="flex items-center gap-4 p-4 rounded-2xl border border-gray-100">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0 <?php echo $yes ? 'text-tenezer-gold' : 'text-gray-300'; ?>">
+                                <i class="fas <?php echo $icon; ?> text-sm"></i>
+                            </div>
+                            <div>
+                                <dt class="text-[9px] font-black text-gray-400 uppercase tracking-widest"><?php echo $label; ?></dt>
+                                <dd class="font-bold <?php echo $yes ? 'text-slate-900' : 'text-gray-400'; ?>"><?php echo htmlspecialchars($value); ?></dd>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </dl>
+                </div>
+                <?php else: ?>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-8 border-t border-gray-100">
                     <?php if ($property['category'] === 'logement'): ?>
                         <?php if ($property['bedrooms'] !== null): ?>
@@ -131,6 +156,7 @@ require_once 'includes/navbar.php';
                     <div><span class="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">État</span><span class="font-bold text-slate-900"><?php echo $property['is_new'] ? 'Neuf' : 'Ancien'; ?></span></div>
                     <?php endif; ?>
                 </div>
+                <?php endif; ?>
 
                 <?php if (!empty($features)): ?>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 py-8 border-t border-gray-100">
