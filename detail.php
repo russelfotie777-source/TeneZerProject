@@ -18,16 +18,17 @@ $photos = array_values(array_filter($media, fn($m) => $m['type'] === 'photo'));
 $videos = array_values(array_filter($media, fn($m) => $m['type'] === 'video'));
 
 $features = json_decode($property['features'] ?? '[]', true) ?: [];
+$isMeuble = $property['category'] === 'meuble';
 
 $whatsapp_text = "Bonjour Tenezer,\n\n";
-$whatsapp_text .= "Je suis intéressé(e) par ce bien :\n";
+$whatsapp_text .= $isMeuble ? "Je souhaite réserver ce logement meublé :\n" : "Je suis intéressé(e) par ce bien :\n";
 $whatsapp_text .= "🏠 " . $property['title'] . "\n";
 $whatsapp_text .= "🆔 Réf : #TNZ-" . $property['id'] . "\n";
 $whatsapp_text .= "📍 " . ($property['quartier'] ? $property['quartier'] . ', ' : '') . $property['city'] . "\n";
-$whatsapp_text .= "💰 " . number_format((float)$property['price'], 0, ',', ' ') . " FCFA";
+$whatsapp_text .= "💰 " . tenezer_price_label($property);
 
 $page_title = $property['title'] . ' | Tenezer Immobilier';
-$og_description = tenezer_type_label($property['type']) . ' à ' . ($property['quartier'] ? $property['quartier'] . ', ' : '') . $property['city'] . ' — ' . number_format((float)$property['price'], 0, ',', ' ') . ' FCFA';
+$og_description = tenezer_type_label($property['type']) . ' à ' . ($property['quartier'] ? $property['quartier'] . ', ' : '') . $property['city'] . ' — ' . tenezer_price_label($property);
 $mainPhoto = tenezer_main_photo($pdo, $property['id']);
 if ($mainPhoto) {
     $og_image = tenezer_absolute_url($mainPhoto);
@@ -48,14 +49,14 @@ require_once 'includes/navbar.php';
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-3 pb-4 border-b border-gray-100">
                 <div class="flex flex-wrap items-center gap-2 sm:gap-4">
                     <span class="bg-tenezer-gold/10 text-[#b8860b] text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
-                        <?php echo htmlspecialchars(tenezer_type_label($property['type'])); ?>
+                        <?php echo htmlspecialchars($isMeuble ? tenezer_meuble_label($property['type']) : tenezer_type_label($property['type'])); ?>
                     </span>
                     <span class="text-gray-400 text-[11px] sm:text-xs italic">
                         <i class="fas fa-map-marker-alt mr-1 text-tenezer-gold"></i>
                         <?php echo htmlspecialchars(($property['quartier'] ? $property['quartier'] . ', ' : '') . $property['city']); ?>
                     </span>
                 </div>
-                <a href="biens.php?category=<?php echo htmlspecialchars($property['category']); ?>" class="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] hover:text-tenezer-gold transition-colors">
+                <a href="<?php echo $isMeuble ? 'meubles.php' : 'biens.php?category=' . htmlspecialchars($property['category']); ?>" class="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] hover:text-tenezer-gold transition-colors">
                     <i class="fas fa-arrow-left mr-1"></i> Retour
                 </a>
             </div>
@@ -154,6 +155,9 @@ require_once 'includes/navbar.php';
                             <span class="text-3xl sm:text-4xl font-black tracking-tight">
                                 <?php echo number_format((float)$property['price'], 0, ',', ' '); ?>
                                 <small class="text-xs font-bold opacity-40 uppercase">FCFA</small>
+                                <?php if (isset(TENEZER_PRICE_PERIODS[$property['price_period'] ?? ''])): ?>
+                                    <small class="text-xs font-bold opacity-40"><?php echo TENEZER_PRICE_PERIODS[$property['price_period']]; ?></small>
+                                <?php endif; ?>
                             </span>
                         </div>
 
