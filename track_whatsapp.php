@@ -12,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$entity_type, $entity_id]);
             echo json_encode(['status' => 'success']);
         } catch (Exception $e) {
-            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+            error_log('track_whatsapp : ' . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'Clic non enregistré']);
         }
     } else {
         echo json_encode(['status' => 'error', 'message' => 'ID invalide']);
