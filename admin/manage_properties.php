@@ -24,10 +24,11 @@ if (isset($_GET['toggle'])) {
 }
 
 $category = $_GET['category'] ?? 'all';
-$sql = "SELECT p.*, o.agency_name FROM properties p LEFT JOIN owners o ON p.owner_id = o.id";
+// Les meublés ont leur propre écran (manage_meubles.php)
+$sql = "SELECT p.*, o.agency_name FROM properties p LEFT JOIN owners o ON p.owner_id = o.id WHERE p.category IN ('logement', 'terrain')";
 $params = [];
 if (in_array($category, ['logement', 'terrain'], true)) {
-    $sql .= " WHERE p.category = ?";
+    $sql .= " AND p.category = ?";
     $params[] = $category;
 }
 $sql .= " ORDER BY p.created_at DESC";
