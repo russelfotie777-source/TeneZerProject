@@ -1,6 +1,11 @@
 # Activation de la réécriture
 RewriteEngine On
 
+# Forcer HTTPS : à décommenter une fois le certificat SSL actif sur le domaine
+# (cPanel > SSL/TLS Status). Laisser commenté derrière un proxy en « SSL flexible ».
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
 # Type MIME correct pour le manifest PWA
 AddType application/manifest+json .webmanifest
 AddType application/json .json
