@@ -38,12 +38,17 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^([^\.]+)$ $1.php [NC,L]
 
-# Headers PWA
-<FilesMatch "sw\.js$">
-    Header set Service-Worker-Allowed "/"
-    Header set Cache-Control "no-cache, no-store, must-revalidate"
-</FilesMatch>
+# Headers PWA (dans IfModule : sans mod_headers, Apache renverrait une erreur 500)
+<IfModule mod_headers.c>
+    <FilesMatch "sw\.js$">
+        Header set Service-Worker-Allowed "/"
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+    </FilesMatch>
 
-<FilesMatch "manifest\.json$">
-    Header set Cache-Control "public, max-age=604800"
-</FilesMatch>
+    <FilesMatch "manifest\.json$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
