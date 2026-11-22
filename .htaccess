@@ -25,6 +25,17 @@ AddType application/json .json
 # Désactiver l'index des dossiers
 Options -Indexes
 
+# Fichiers qui ne doivent jamais être servis (dumps SQL, notes, config PHP, versions)
+<FilesMatch "(\.(sql|md|log|bak|dist|lock|ini)|^\.git.*|^composer\.json)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
 # Gestion erreur 404
 # Chemin absolu depuis la racine du domaine (fonctionne si le site est déployé à la racine,
 # comme c'est prévu en production ; en local sous /mfappartement/ ce sera /mfappartement/404.php)
