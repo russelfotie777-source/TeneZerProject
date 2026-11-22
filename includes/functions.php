@@ -136,6 +136,54 @@ function tenezer_save_media($pdo, array $files, $entityType, $entityId, $type, $
     return $inserted;
 }
 
+/**
+ * Supprime des médias d'un bien (fichiers sur disque + lignes `media`).
+ * $mediaIds à null supprime tous les médias du bien.
+ */
+function tenezer_delete_media($pdo, $entityId, ?array $mediaIds = null, $entityType = 'property') {
+    $sql = "SELECT id, url FROM media WHERE entity_type = ? AND entity_id = ?";
+    $params = [$entityType, $entityId];
+    if ($mediaIds !== null) {
+        $mediaIds = array_map('intval', $mediaIds);
+        if (!$mediaIds) return 0;
+        $sql .= " AND id IN (" . implode(',', array_fill(0, count($mediaIds), '?')) . ")";
+        $params = array_merge($params, $mediaIds);
+    }
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll();
+
+    foreach ($rows as $m) {
+        @unlink(__DIR__ . '/../assets/uploads/properties/' . $m['url']);
+        $pdo->prepare("DELETE FROM media WHERE id = ?")->execute([$m['id']]);
+    }
+
+    // Si la photo principale vient de partir, la première photo restante prend sa place
+    $chk = $pdo->prepare("SELECT COUNT(*) FROM media WHERE entity_type = ? AND entity_id = ? AND is_main = 1");
+    $chk->execute([$entityType, $entityId]);
+    if ((int)$chk->fetchColumn() === 0) {
+        $pdo->prepare("UPDATE media SET is_main = 1 WHERE entity_type = ? AND entity_id = ? AND type = 'photo' ORDER BY sort_order ASC, id ASC LIMIT 1")
+            ->execute([$entityType, $entityId]);
+    }
+
+    return count($rows);
+}
+
+// Vrai quand migrations/2026-11-22_logements_meubles.sql a été passée sur la base
+function tenezer_meubles_ready($pdo) {
+    try {
+        $pdo->query("SELECT price_period, has_guard, has_secure_gate, open_24h FROM properties LIMIT 0");
+        return true;
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
+function tenezer_delete_property($pdo, $id) {
+    tenezer_delete_media($pdo, $id);
+    $pdo->prepare("DELETE FROM properties WHERE id = ?")->execute([$id]);
+}
+
 function tenezer_log($pdo, $action, $entityType, $entityId, $adminId, $details = '') {
     $stmt = $pdo->prepare("INSERT INTO audit_logs (action, entity_type, entity_id, admin_id, details) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([$action, $entityType, $entityId, $adminId, $details]);
