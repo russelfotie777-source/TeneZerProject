@@ -1,5 +1,20 @@
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.tenezer-request-form').forEach(function (form) {
+        // Un choix « Autre » (data-reveal) affiche son champ de précision et ne l'exige que lorsqu'il est coché
+        form.querySelectorAll('input[type=radio]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                form.querySelectorAll('input[type=radio][data-reveal]').forEach(function (r) {
+                    if (r.name !== radio.name) return;
+                    const target = document.getElementById(r.dataset.reveal);
+                    target.hidden = !r.checked;
+                    target.querySelectorAll('input').forEach(function (input) {
+                        input.required = r.checked;
+                        if (r.checked && r === radio) input.focus();
+                    });
+                });
+            });
+        });
+
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             const msg = form.querySelector('.form-msg');

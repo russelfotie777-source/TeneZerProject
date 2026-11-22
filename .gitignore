@@ -1,0 +1,6 @@
+# Fichiers envoyés par les propriétaires et l'admin : ils vivent sur le serveur, pas dans le dépôt.
+# On garde la protection .htaccess et les 12 photos des biens de démonstration de bd.sql.
+/assets/uploads/**
+!/assets/uploads/**/
+!/assets/uploads/.htaccess
+!/assets/uploads/properties/tnz_property_*_demo.jpg

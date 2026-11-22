@@ -8,13 +8,7 @@ $adminId = $_SESSION['admin_id'] ?? null;
 // Suppression
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
-    $mediaRows = $pdo->prepare("SELECT url FROM media WHERE entity_type = 'property' AND entity_id = ?");
-    $mediaRows->execute([$id]);
-    foreach ($mediaRows->fetchAll() as $m) {
-        @unlink(__DIR__ . '/../assets/uploads/properties/' . $m['url']);
-    }
-    $pdo->prepare("DELETE FROM media WHERE entity_type = 'property' AND entity_id = ?")->execute([$id]);
-    $pdo->prepare("DELETE FROM properties WHERE id = ?")->execute([$id]);
+    tenezer_delete_property($pdo, $id);
     tenezer_log($pdo, 'DELETE', 'property', $id, $adminId, '');
     header('Location: manage_properties.php?deleted=1');
     exit();
@@ -30,10 +24,11 @@ if (isset($_GET['toggle'])) {
 }
 
 $category = $_GET['category'] ?? 'all';
-$sql = "SELECT p.*, o.agency_name FROM properties p LEFT JOIN owners o ON p.owner_id = o.id";
+// Les meublés ont leur propre écran (manage_meubles.php)
+$sql = "SELECT p.*, o.agency_name FROM properties p LEFT JOIN owners o ON p.owner_id = o.id WHERE p.category IN ('logement', 'terrain')";
 $params = [];
 if (in_array($category, ['logement', 'terrain'], true)) {
-    $sql .= " WHERE p.category = ?";
+    $sql .= " AND p.category = ?";
     $params[] = $category;
 }
 $sql .= " ORDER BY p.created_at DESC";

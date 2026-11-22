@@ -7,7 +7,7 @@ require_once 'includes/navbar.php';
 // Biens en vedette (tolère l'absence de la table le temps de la migration de schéma)
 $featured = [];
 try {
-    $stmt = $pdo->query("SELECT id, title, city, quartier, price, category, type
+    $stmt = $pdo->query("SELECT *
                           FROM properties
                           WHERE status = 'active'
                           ORDER BY created_at DESC
@@ -125,10 +125,10 @@ try {
                         <?php endif; ?>
                     </div>
                     <div class="p-6">
-                        <span class="text-[9px] font-black uppercase tracking-widest text-tenezer-gold"><?php echo htmlspecialchars($p['category'] === 'terrain' ? 'Terrain' : ucfirst($p['type'])); ?></span>
+                        <span class="text-[9px] font-black uppercase tracking-widest text-tenezer-gold"><?php echo htmlspecialchars($p['category'] === 'terrain' ? 'Terrain' : ($p['category'] === 'meuble' ? tenezer_meuble_label($p['type']) : ucfirst($p['type']))); ?></span>
                         <h3 class="font-bold text-slate-900 mt-2 mb-1"><?php echo htmlspecialchars($p['title']); ?></h3>
                         <p class="text-xs text-gray-500 mb-4"><i class="fas fa-location-dot mr-1"></i><?php echo htmlspecialchars($p['quartier'] ? $p['quartier'] . ', ' . $p['city'] : $p['city']); ?></p>
-                        <p class="font-black text-tenezer-dark"><?php echo number_format((float)$p['price'], 0, ',', ' '); ?> FCFA</p>
+                        <p class="font-black text-tenezer-dark"><?php echo htmlspecialchars(tenezer_price_label($p)); ?></p>
                     </div>
                 </a>
                 <?php endforeach; ?>

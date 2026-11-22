@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tenezer-cache-v1';
+const CACHE_NAME = 'tenezer-cache-v2';
 
 const PRECACHE_URLS = [
   './',

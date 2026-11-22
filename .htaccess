@@ -1,6 +1,11 @@
 # Activation de la réécriture
 RewriteEngine On
 
+# Forcer HTTPS : à décommenter une fois le certificat SSL actif sur le domaine
+# (cPanel > SSL/TLS Status). Laisser commenté derrière un proxy en « SSL flexible ».
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
 # Type MIME correct pour le manifest PWA
 AddType application/manifest+json .webmanifest
 AddType application/json .json
@@ -25,6 +30,17 @@ AddType application/json .json
 # Désactiver l'index des dossiers
 Options -Indexes
 
+# Fichiers qui ne doivent jamais être servis (dumps SQL, notes, config PHP, versions)
+<FilesMatch "(\.(sql|md|log|bak|dist|lock|ini)|^\.git.*|^composer\.json)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
 # Gestion erreur 404
 # Chemin absolu depuis la racine du domaine (fonctionne si le site est déployé à la racine,
 # comme c'est prévu en production ; en local sous /mfappartement/ ce sera /mfappartement/404.php)
@@ -38,12 +54,17 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^([^\.]+)$ $1.php [NC,L]
 
-# Headers PWA
-<FilesMatch "sw\.js$">
-    Header set Service-Worker-Allowed "/"
-    Header set Cache-Control "no-cache, no-store, must-revalidate"
-</FilesMatch>
+# Headers PWA (dans IfModule : sans mod_headers, Apache renverrait une erreur 500)
+<IfModule mod_headers.c>
+    <FilesMatch "sw\.js$">
+        Header set Service-Worker-Allowed "/"
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+    </FilesMatch>
 
-<FilesMatch "manifest\.json$">
-    Header set Cache-Control "public, max-age=604800"
-</FilesMatch>
+    <FilesMatch "manifest\.json$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
