@@ -28,6 +28,29 @@ $city = trim($_POST['city'] ?? '') ?: null;
 $subType = trim($_POST['sub_type'] ?? '') ?: null;
 $propertyId = !empty($_POST['property_id']) ? (int)$_POST['property_id'] : null;
 $extra = is_array($_POST['extra'] ?? null) ? $_POST['extra'] : [];
+
+// Logement meublé : la demande doit dire quoi, où, pour quel budget et pour combien de temps
+if ($module === 'meuble') {
+    $duree = trim($extra['duree_sejour'] ?? '');
+    if ($duree === 'Autre durée') {
+        $duree = trim($extra['duree_precisee'] ?? '');
+    }
+    unset($extra['duree_precisee']);
+    $extra['duree_sejour'] = $duree;
+
+    $missing = [];
+    if ($city === null) $missing[] = 'la ville';
+    if (trim($extra['type_logement'] ?? '') === '') $missing[] = 'le type de bien';
+    // Sur une annonce précise, le prix de l'annonce tient lieu de budget
+    if ($propertyId === null && trim($extra['budget'] ?? '') === '') $missing[] = 'le budget';
+    if ($duree === '') $missing[] = 'la durée du séjour';
+    if ($missing) {
+        http_response_code(422);
+        echo json_encode(['status' => 'error', 'message' => 'Indiquez ' . implode(', ', $missing) . '.']);
+        exit;
+    }
+}
+
 $payload = json_encode($extra, JSON_UNESCAPED_UNICODE);
 
 try {
