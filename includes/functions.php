@@ -25,6 +25,32 @@ const TENEZER_LOGEMENT_TYPES = [
     'autre'       => 'Autre',
 ];
 
+// Logements meublés (module 3) : seuls ces trois types sont proposés aux clients
+const TENEZER_MEUBLE_TYPES = [
+    'chambre'     => 'Chambre',
+    'studio'      => 'Studio',
+    'appartement' => 'Appartement',
+];
+
+const TENEZER_MEUBLE_DUREES = ['1 jour', '10 jours', '1 mois'];
+
+const TENEZER_PRICE_PERIODS = [
+    'jour' => 'par jour',
+    'mois' => 'par mois',
+];
+
+// « Studio meublé », « Chambre meublée » : l'accord suit le type
+function tenezer_meuble_label($type) {
+    $label = TENEZER_MEUBLE_TYPES[$type] ?? ucfirst($type);
+    return $label . ($type === 'chambre' ? ' meublée' : ' meublé');
+}
+
+function tenezer_price_label(array $property) {
+    $label = number_format((float)$property['price'], 0, ',', ' ') . ' FCFA';
+    $period = $property['price_period'] ?? null;
+    return isset(TENEZER_PRICE_PERIODS[$period]) ? $label . ' ' . TENEZER_PRICE_PERIODS[$period] : $label;
+}
+
 function tenezer_type_label($type) {
     if ($type === 'terrain') return 'Terrain';
     return TENEZER_LOGEMENT_TYPES[$type] ?? ucfirst($type);
