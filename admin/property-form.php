@@ -12,6 +12,7 @@ if ($propertyId) {
     $stmt->execute([$propertyId]);
     $property = $stmt->fetch();
     if (!$property) { header('Location: manage_properties.php'); exit(); }
+    if ($property['category'] === 'meuble') { header('Location: meuble-form.php?id=' . $propertyId); exit(); }
 }
 
 $owners = $pdo->query("SELECT id, agency_name FROM owners WHERE status = 'approved' ORDER BY agency_name")->fetchAll();

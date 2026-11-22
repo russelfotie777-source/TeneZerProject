@@ -54,20 +54,21 @@ CREATE TABLE `owners` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `properties` (logements à louer + terrains — module 1)
+-- Structure de la table `properties` (logements à louer + terrains — module 1, logements meublés — module 3)
 --
 
 CREATE TABLE `properties` (
   `id` int(11) NOT NULL,
   `owner_id` int(11) DEFAULT NULL,
   `created_by_admin_id` int(11) DEFAULT NULL,
-  `category` enum('logement','terrain') NOT NULL DEFAULT 'logement',
+  `category` enum('logement','terrain','meuble') NOT NULL DEFAULT 'logement',
   `type` varchar(30) NOT NULL,
   `title` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `city` varchar(100) NOT NULL,
   `quartier` varchar(100) DEFAULT NULL,
   `price` decimal(12,2) NOT NULL,
+  `price_period` enum('jour','mois') DEFAULT NULL,
   `is_new` tinyint(1) DEFAULT NULL,
   `distance_route` varchar(100) DEFAULT NULL,
   `bedrooms` int(11) DEFAULT NULL,
@@ -77,6 +78,9 @@ CREATE TABLE `properties` (
   `surface_cuisine` int(11) DEFAULT NULL,
   `superficie_terrain` int(11) DEFAULT NULL,
   `has_parking` tinyint(1) DEFAULT 0,
+  `has_guard` tinyint(1) NOT NULL DEFAULT 0,
+  `has_secure_gate` tinyint(1) NOT NULL DEFAULT 0,
+  `open_24h` tinyint(1) NOT NULL DEFAULT 0,
   `features` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`features`)),
   `status` enum('active','inactive') NOT NULL DEFAULT 'active',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
