@@ -194,10 +194,51 @@ require_once 'includes/navbar.php';
                         </a>
                         <button type="button" onclick="document.getElementById('visit-form-wrap').scrollIntoView({behavior:'smooth'})"
                                 class="block w-full border border-white/20 text-white py-4 rounded-2xl text-center font-black text-xs uppercase tracking-[0.2em] hover:border-tenezer-gold hover:text-tenezer-gold transition-all">
-                            Demander une visite
+                            <?php echo $isMeuble ? 'Réserver ce logement' : 'Demander une visite'; ?>
                         </button>
                     </div>
 
+                    <?php if ($isMeuble): ?>
+                    <div id="visit-form-wrap" class="bg-slate-50 rounded-[2rem] p-6 sm:p-8 border border-gray-100 scroll-mt-24">
+                        <h4 class="font-black text-tenezer-dark text-sm uppercase tracking-wide mb-4">Demande de réservation</h4>
+                        <div class="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
+                            <i class="fas fa-circle-info mr-1"></i> Inscription : <strong>2 000 FCFA</strong> · Commission propriétaire : <strong>10 %</strong> après satisfaction.
+                        </div>
+                        <form class="tenezer-request-form space-y-3">
+                            <input type="hidden" name="module" value="meuble">
+                            <input type="hidden" name="property_id" value="<?php echo (int)$property['id']; ?>">
+                            <input type="hidden" name="city" value="<?php echo htmlspecialchars($property['city']); ?>">
+                            <input type="hidden" name="extra[type_logement]" value="<?php echo htmlspecialchars(TENEZER_MEUBLE_TYPES[$property['type']] ?? tenezer_type_label($property['type'])); ?>">
+                            <input type="hidden" name="extra[quartier]" value="<?php echo htmlspecialchars($property['quartier'] ?? ''); ?>">
+                            <input type="hidden" name="extra[prix_annonce]" value="<?php echo htmlspecialchars(tenezer_price_label($property)); ?>">
+                            <label for="r-nom" class="sr-only">Nom et prénom</label>
+                            <input type="text" id="r-nom" name="first_name" required autocomplete="name" placeholder="Nom et prénom" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-tenezer-gold">
+                            <label for="r-tel" class="sr-only">Numéro de téléphone</label>
+                            <input type="tel" id="r-tel" name="phone" required autocomplete="tel" placeholder="Numéro de téléphone" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-tenezer-gold">
+                            <fieldset class="pt-1">
+                                <legend class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Durée du séjour *</legend>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <?php foreach (array_merge(TENEZER_MEUBLE_DUREES, ['Autre durée']) as $duree): ?>
+                                    <label>
+                                        <input type="radio" name="extra[duree_sejour]" value="<?php echo $duree; ?>" required class="peer sr-only" <?php echo $duree === 'Autre durée' ? 'data-reveal="r-duree-autre"' : ''; ?>>
+                                        <span class="block cursor-pointer text-center px-3 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm font-bold text-tenezer-dark transition-colors peer-checked:border-tenezer-gold peer-checked:bg-tenezer-gold/10 peer-focus-visible:ring-2 peer-focus-visible:ring-tenezer-gold"><?php echo $duree; ?></span>
+                                    </label>
+                                    <?php endforeach; ?>
+                                </div>
+                                <div id="r-duree-autre" class="mt-2" hidden>
+                                    <label for="r-duree-precisee" class="sr-only">Précisez la durée du séjour</label>
+                                    <input type="text" id="r-duree-precisee" name="extra[duree_precisee]" placeholder="Précisez la durée, ex : 2 semaines" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-tenezer-gold">
+                                </div>
+                            </fieldset>
+                            <label for="r-com" class="sr-only">Commentaire</label>
+                            <textarea id="r-com" name="extra[commentaire]" rows="3" placeholder="Date d'arrivée, nombre de personnes… (optionnel)" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-tenezer-gold"></textarea>
+                            <p class="form-msg hidden text-xs text-red-600" role="alert"></p>
+                            <button type="submit" class="w-full bg-tenezer-dark text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-tenezer-gold hover:text-tenezer-dark transition-all">
+                                Envoyer ma demande
+                            </button>
+                        </form>
+                    </div>
+                    <?php else: ?>
                     <div id="visit-form-wrap" class="bg-slate-50 rounded-[2rem] p-6 sm:p-8 border border-gray-100">
                         <h4 class="font-black text-tenezer-dark text-sm uppercase tracking-wide mb-4">Demande de visite / contact</h4>
                         <?php if ($property['category'] === 'logement'): ?>
@@ -222,6 +263,7 @@ require_once 'includes/navbar.php';
                             <p id="visit-form-msg" class="text-xs text-center hidden"></p>
                         </form>
                     </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -241,7 +283,7 @@ document.querySelectorAll('.whatsapp-track-btn').forEach(function (btn) {
     });
 });
 
-document.getElementById('visit-form').addEventListener('submit', function (e) {
+document.getElementById('visit-form')?.addEventListener('submit', function (e) {
     e.preventDefault();
     const form = e.target;
     const msg = document.getElementById('visit-form-msg');
@@ -265,5 +307,8 @@ document.getElementById('visit-form').addEventListener('submit', function (e) {
         });
 });
 </script>
+<?php if ($isMeuble): ?>
+<script src="assets/js/request-form.js"></script>
+<?php endif; ?>
 
 <?php require_once 'includes/footer.php'; ?>
